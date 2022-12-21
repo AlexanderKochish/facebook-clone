@@ -1,11 +1,12 @@
-import React, { useEffect, useRef, useState } from 'react'
+import { useState } from 'react'
 import Head from 'next/head'
-import Image from 'next/image'
 import Header from './Header/Header'
+
 
 const Layout = ({children}) => {
   const[accountDropDown,setAccountDropDown] = useState(false)
   const[notifications,setNotification] = useState(false)
+  const[messenger,setMessenger] = useState(false)
   
   return (
     <div className='w-full min-h-screen'>
@@ -19,6 +20,8 @@ const Layout = ({children}) => {
       accountDropDown={accountDropDown}
       notifications={notifications}
       setNotification={setNotification}
+      messenger={messenger}
+      setMessenger={setMessenger}
     />
     <main className='flex w-full h-screen'>
       {children}

@@ -1,5 +1,5 @@
 import { createUserWithEmailAndPassword, updateProfile } from "firebase/auth";
-import { addDoc, collection } from "firebase/firestore";
+import { doc,setDoc } from "firebase/firestore";
 import { ref, uploadBytesResumable, getDownloadURL } from "firebase/storage";
 import { useRouter } from "next/router";
 import { auth, db, storage } from "../../firebase";
@@ -8,6 +8,7 @@ const SignUp = () => {
   const router = useRouter()
 
   const userSubmit = async(e) => {
+    e.preventDefault()
     const displayName = e.target[0].value;
     const email = e.target[1].value;
     const password = e.target[2].value;
@@ -16,7 +17,7 @@ const SignUp = () => {
     try{
     const res = await createUserWithEmailAndPassword(auth, email, password)
 
-    const storageRef = ref(storage, '/image');
+    const storageRef = ref(storage, file.name);
     const uploadTask = uploadBytesResumable(storageRef, file);
 
     uploadTask.on('state_changed', 
@@ -33,7 +34,7 @@ const SignUp = () => {
         }
       }, 
       (error) => {
-        // Handle unsuccessful uploads
+        console.log(error.message)
       }, 
       () => {
         getDownloadURL(uploadTask.snapshot.ref).then(async(downloadURL) => {
@@ -41,10 +42,10 @@ const SignUp = () => {
             displayName,
             photoURL:downloadURL
           });
-          await addDoc(collection(db,'users'),{
+          await setDoc(doc(db, 'users', res.user.uid),{
             uid:res.user.uid,
-            email:res.user.email,
-            displayName:res.user.displayName,
+            email,
+            displayName,
             photoURL:res.user.photoURL
           })
         });
@@ -61,7 +62,7 @@ const SignUp = () => {
         <input type='email' placeholder='Your Email' className="h-12 px-2 w-full outline-none bg-slate-200"/>
         <input type='password' placeholder='Your Password' className="h-12 px-2 w-full outline-none bg-slate-200"/>
         <input type='file' id="file" className="hidden"/>
-        <label htmlFor="file">Upload your image</label>
+        <label htmlFor="file">Upload Image</label>
         <button className="py-2 px-3 rounded-md bg-slate-600 text-white">Sign Up</button>
       </form>
     </div>

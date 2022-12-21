@@ -1,5 +1,5 @@
 import Image from 'next/image'
-import React, { useContext, useRef } from 'react'
+import React, {  useContext, useRef } from 'react'
 import facebookImg from '../../public/fb_icon_325x325.png'
 import userPhoto from '../../public/user-icon.png'
 import { AiFillHome,AiOutlineShop } from 'react-icons/ai'
@@ -10,27 +10,48 @@ import { BiSearchAlt2 } from 'react-icons/bi'
 import AccountDropDown from './AccountDropDown'
 import useOutSideClick from '../../hooks/useOutSideClick'
 import NotificationDropDown from './NotificationDropDown'
+
+import { useRouter } from 'next/router'
+import Link from 'next/link'
+import MessengerDropDown from './MessengerDropDown'
 import { AuthContext } from '../../context/AuthContext'
 
-const Header = ({accountDropDown,setAccountDropDown,notifications,setNotification}) => {
-    const { currentUser } = useContext(AuthContext)
+const Header = ({
+    accountDropDown,
+    setAccountDropDown,
+    notifications,
+    setNotification,
+    messenger,
+    setMessenger,
+}) => {
+    const{ currentUser } = useContext(AuthContext)
     const ref = useRef(null) 
-console.log(currentUser);
+    const {pathname} = useRouter()
+    
     useOutSideClick(ref,setAccountDropDown,accountDropDown)
     useOutSideClick(ref,setNotification,notifications)
+    useOutSideClick(ref,setMessenger,messenger)
 
-    const handleAccout = () =>{  
+    const handleAccout = () => {  
         setAccountDropDown(!accountDropDown)   
         setNotification()
+        setMessenger()
     }
 
-    const handleNotification = () =>{
+    const handleNotification = () => {
         setNotification(!notifications)
-        setAccountDropDown()   
+        setAccountDropDown() 
+        setMessenger()  
+    }
+
+    const handleMessenger = () => {
+        setMessenger(!messenger)
+        setAccountDropDown() 
+        setNotification()
     }
   return (
-    <header ref={ref} className='bg-white h-14 shadow-lg flex fixed top-0 left-0 right-0 items-center'>
-        <div className='container mx-auto flex justify-between items-center py-1'>
+    <header ref={ref} className='bg-white h-14 shadow-md px-3 flex justify-between fixed top-0 left-0 right-0 items-center z-30'>
+       
         <div className='flex items-center space-x-2'>
             <div className='relative w-12 h-10'>
                 <Image src={facebookImg} fill alt='current-user' className='object-cover w-10 h-10 rounded-[50%]'/>
@@ -41,33 +62,53 @@ console.log(currentUser);
             </div>  
         </div>
         <ul className='flex items-center space-x-2 mr-14'>
-            <li className='flex justify-center items-center rounded-lg w-24 h-12 hover:bg-gray-100 cursor-pointer'>
-                <AiFillHome className='w-7 h-7 text-gray-500'/>
+            <Link href={'/'}>
+            <li className={pathname === '/'?'flex justify-center items-center pb-2 -mb-2 text-sky-600 w-24 h-12 cursor-pointer border-b-4 border-sky-600'
+            :
+            'flex justify-center items-center rounded-lg w-24 h-12 text-gray-500 hover:bg-gray-100'}>
+                <AiFillHome className='w-7 h-7'/>
             </li>
-            <li className='flex justify-center items-center rounded-lg w-24 h-12 hover:bg-gray-100 cursor-pointer'>
-                <MdOndemandVideo className='w-7 h-7 text-gray-500'/>
+            </Link>
+            <Link href={'/watch'}>
+            <li className={pathname === '/watch'?'flex justify-center items-center pb-2 -mb-2 text-sky-600 w-24 h-12 cursor-pointer border-b-4 border-sky-600'
+            :
+            'flex justify-center items-center rounded-lg w-24 h-12 text-gray-500 hover:bg-gray-100'}>
+                <MdOndemandVideo className='w-7 h-7'/>
             </li>
-            <li className='flex justify-center items-center rounded-lg w-24 h-12 hover:bg-gray-100 cursor-pointer'>
-                <AiOutlineShop className='w-7 h-7 text-gray-500'/>
+            </Link>
+            <Link href={'/marketplace'}>
+            <li className={pathname === '/marketplace'?'flex justify-center items-center pb-2 -mb-2 text-sky-600 w-24 h-12 cursor-pointer border-b-4 border-sky-600'
+            :
+            'flex justify-center items-center rounded-lg w-24 h-12 text-gray-500 hover:bg-gray-100'}>
+                <AiOutlineShop className='w-7 h-7'/>
             </li>
-            <li className='flex justify-center items-center rounded-lg w-24 h-12 hover:bg-gray-100 cursor-pointer'>
-                <MdGroups className='w-7 h-7 text-gray-500'/>
+            </Link>
+            <Link href={'/groups'}>
+            <li className={pathname === '/groups'? 'flex justify-center items-center pb-2 -mb-2 text-sky-600 w-24 h-12 cursor-pointer border-b-4 border-sky-600'
+            :
+            'flex justify-center items-center rounded-lg w-24 h-12 text-gray-500 hover:bg-gray-100'}>
+                <MdGroups className='w-7 h-7'/>
             </li>
+            </Link>
         </ul>
         <ul className='flex space-x-2 items-center'>
             <li>
-                <div className='p-2 bg-slate-200 rounded-[50%] cursor-pointer hover:bg-slate-300'>
-                <CgMenuGridO className='w-6 h-6 text-black'/>
+                <div className='p-2 bg-slate-200 rounded-[50%] cursor-pointer hover:bg-slate-300 text-black'>
+                <CgMenuGridO className='w-6 h-6'/>
                 </div>
             </li>
-            <li>
-                <div className='p-2 bg-slate-200 rounded-[50%] cursor-pointer hover:bg-slate-300'>
-                    <FaFacebookMessenger className='w-6 h-6 text-black'/>
+            <li onClick={handleMessenger}>
+                <div className={messenger?'p-2 bg-sky-100 rounded-[50%] cursor-pointer hover:bg-sky-200 text-sky-700'
+                :
+                'p-2 bg-slate-200 rounded-[50%] cursor-pointer hover:bg-slate-300 text-black'}>
+                    <FaFacebookMessenger className='w-6 h-6'/>
                 </div>
             </li>
             <li onClick={handleNotification}>
-                <div className='p-2 bg-slate-200 rounded-[50%] cursor-pointer hover:bg-slate-300'>
-                    <FaBell className='w-6 h-6 text-black'/>
+                <div className={notifications?'p-2 bg-sky-100 rounded-[50%] cursor-pointer hover:bg-sky-200 text-sky-700'
+                :
+                'p-2 bg-slate-200 rounded-[50%] cursor-pointer hover:bg-slate-300 text-black'}>
+                    <FaBell className='w-6 h-6'/>
                 </div>
             </li>
             <li onClick={handleAccout}>
@@ -76,9 +117,10 @@ console.log(currentUser);
                 </div>
             </li>
         </ul>
-        </div>
+        
         {accountDropDown && <AccountDropDown/>}
         {notifications && <NotificationDropDown/>}
+        {messenger && <MessengerDropDown/>}
     </header>
   )
 }
