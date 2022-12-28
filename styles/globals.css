@@ -2,9 +2,11 @@
 @tailwind components;
 @tailwind utilities;
 
+
+
 @layer{
   body{
-    @apply bg-[#F0F2F5]
+    @apply bg-[#F0F2F5] dark:bg-[#242526]
   }
 }
 

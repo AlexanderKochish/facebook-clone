@@ -15,15 +15,15 @@ const FriendsList = () => {
     const getFriends = async() => {
 
       try {
-        const friendsListRef = collection(db, 'users', currentUser.uid, 'friends')
+        const friendsListRef = collection(db, 'users', currentUser?.uid, 'friends')
         const res = await getDocs(friendsListRef)
         setFriendsList(res.docs.map((doc)=>({...doc.data(),id:doc.id})))
       } catch (error) {
-        console.log(error.message)
+        console.log(error)
       }
     }
-      currentUser && getFriends()
-  },[currentUser])
+       getFriends()
+  },[currentUser?.uid])
 
   return (
     <div className='w-[350px] min-h-screen flex flex-col pt-16 px-4 bg-white shadow-md'>
@@ -51,14 +51,14 @@ const FriendsList = () => {
         </div>
         <ul>
           {friendsList.map(({user})=>(
-          <Link href={`/profile/${user.uid}`}>
-          <li key={user.uid} className='flex items-center justify-between hover:bg-slate-100 rounded-md px-2 py-3 cursor-pointer'>
+          <Link key={user.uid} href={`/profile/${user.uid}`}>
+          <li className='flex items-center justify-between hover:bg-slate-100 rounded-md px-2 py-3 cursor-pointer'>
             <div className='flex items-center space-x-2'>
             <div className='relative w-12 h-12'>
-              <Image src={user.photoURL || userPhoto} fill alt='friends' className='object-cover rounded-[50%]'/>
+              <Image src={user?.photoURL || userPhoto} fill alt='friends' className='object-cover rounded-[50%]'/>
             </div>
             <div>
-              <span className='text-medium font-medium'>{user.displayName}</span>
+              <span className='text-medium font-medium'>{user?.displayName}</span>
               <span></span>
             </div>
             </div>

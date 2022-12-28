@@ -1,21 +1,21 @@
 import React, { useContext, useEffect, useState } from 'react'
 import { MdOutlineClose } from 'react-icons/md'
 import { HiPlus } from 'react-icons/hi'
-import { AuthContext } from '../../context/AuthContext'
-import { arrayUnion, doc, getDoc, setDoc, Timestamp } from 'firebase/firestore'
+import { arrayUnion, doc, getDoc, setDoc, Timestamp, updateDoc } from 'firebase/firestore'
 import { db, storage } from '../../firebase'
 import Image from 'next/image'
 import { v4 as uuidv4 } from 'uuid';
 import { getDownloadURL, ref, uploadBytesResumable } from 'firebase/storage'
 import SaveSelectModal from './SaveSelectModal'
 import { updateProfile } from 'firebase/auth'
+import { AuthContext } from '../../context/AuthContext'
 
-const Modal = ({setProfilePhoto,uploadProfilePhoto}) => {
+const Modal = ({setProfilePhoto,uploadProfilePhoto,profile}) => {
     const[profileGallery,setProfileGallery] = useState([])
     const[file,setFile] = useState(null)
-    const{ currentUser } = useContext(AuthContext)
     const[openSaveModal,setOpenSaveModal] = useState(false)
-
+    const {currentUser} = useContext(AuthContext)
+    
     const showModalProfilePhoto = () => { 
         setProfilePhoto(!uploadProfilePhoto)
     }
@@ -42,13 +42,20 @@ const Modal = ({setProfilePhoto,uploadProfilePhoto}) => {
             console.log(error.message)
         },() => {
             getDownloadURL(uploadTask.snapshot.ref).then(async(image) => {
+                if(!currentUser)return;
+                await updateProfile(currentUser,{
+                    photoURL:image
+                   }),
+                await updateDoc(doc(db,'users',currentUser?.uid),{
+                    photoURL:image
+                })
                 await setDoc(doc(db, 'users', currentUser?.uid, 'gallery','profilePhoto'),{
                 images:arrayUnion({
                     id: uuidv4(),
                     createdAt: Timestamp.now(),
                     image
-                })},{merge:true}
-               )})    
+                })},{merge:true}) 
+            })    
         })} catch(err){
                 console.log(err.message)
             }   
@@ -60,6 +67,10 @@ const Modal = ({setProfilePhoto,uploadProfilePhoto}) => {
             await updateProfile(currentUser,{
                 photoURL: img
             })
+            await updateDoc(doc(db,'users',currentUser?.uid),{
+                photoURL:img
+            })
+            console.log(res);
             setProfilePhoto(!uploadProfilePhoto)
         } catch (error) {
             console.log(error.message);
@@ -85,6 +96,7 @@ const Modal = ({setProfilePhoto,uploadProfilePhoto}) => {
         openSaveModal={openSaveModal} 
         setOpenSaveModal={setOpenSaveModal} 
         numIndex={profileGallery?.length}
+        profile={profile}
     />
     :
     <div className='fixed top-0 left-0 right-0 w-screen min-h-full flex items-center justify-center z-30 bg-white/80'>

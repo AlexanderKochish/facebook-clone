@@ -9,15 +9,14 @@ import { db, storage } from '../../firebase'
 import { v4 } from 'uuid'
 import Post from './Posts/Post';
 
-const ProfilePosts = ({posts}) => {
+const ProfilePosts = ({posts,profile}) => {
     const[file,setFile] = useState(null)
     const[postText,setPostText] = useState('')
-    const{ currentUser } = useContext(AuthContext)
 
     const createPost = async(e) => {
         e.preventDefault()
             try {
-                const postRef = collection(db,'users',currentUser?.uid,'posts')
+                const postRef = collection(db,'users',profile?.uid,'posts')
                 const storageRef = ref(storage, 'images/rivers.jpg');
                 const uploadTask = uploadBytesResumable(storageRef, file);
                 uploadTask.on('state_changed', 
@@ -39,7 +38,7 @@ const ProfilePosts = ({posts}) => {
                         createdAt: Timestamp.now(),
                         text: postText,
                         image: downloadURL
-                    })
+                    },{merge:true})
                     })
                 }) 
             } catch (error) {
@@ -50,10 +49,10 @@ const ProfilePosts = ({posts}) => {
 
   return (
     <div className='flex flex-col w-full min-h-screen self-start'>
-    <form onSubmit={createPost} className='bg-white w-full min-h-[100px] self-start flex flex-col p-4 ml-3 mt-5 rounded-lg shadow-md'>
+    <form onSubmit={createPost} className='bg-white w-full min-h-[100px] self-start flex flex-col p-4 mt-5 rounded-lg shadow-md'>
         <div className='flex space-x-2 border-b pb-4'>
             <div className='relative w-10 h-10'>
-                <Image src={currentUser?.photoURL || userPhoto} fill alt='current-user' className='object-cover rounded-[50%]'/>
+                <Image src={profile?.photoURL || userPhoto} fill alt='current-user' className='object-cover rounded-[50%]'/>
             </div>
             <input type="text" value={postText} onChange={(e)=>setPostText(e.target.value)} placeholder='What you news?' className='rounded-2xl outline-none py-2 px-3 bg-slate-200 w-full'/>
         </div>
@@ -75,7 +74,7 @@ const ProfilePosts = ({posts}) => {
             </li>
         </ul>
     </form>
-    {posts?.map((post)=><Post key={post.id} post={post} currentUser={currentUser}/>)}
+    {posts?.map((post)=><Post key={post.id} post={post} profile={profile}/>)}
     </div>
   )
 }

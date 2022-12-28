@@ -9,8 +9,7 @@ const Users = ({users}) => {
   const { currentUser } = useContext(AuthContext)
 
     const addFriend = async (user) => {
-      const friendsRef = collection(db, 'users', currentUser.uid, 'friends')
-      await setDoc(doc(friendsRef),{user})
+      await setDoc(doc(db, 'users', currentUser.uid, 'friends', user.uid),{user})
     }
   
   return (

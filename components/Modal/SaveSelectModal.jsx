@@ -1,20 +1,20 @@
 import React, { useContext, useEffect, useState } from 'react'
 import { MdOutlineClose } from 'react-icons/md'
 import userPhoto from '../../public/user-icon.png'
-import { AuthContext } from '../../context/AuthContext'
 import { arrayRemove, doc, getDoc, onSnapshot, updateDoc } from 'firebase/firestore'
 import { db } from '../../firebase'
 import Image from 'next/image'
 import { updateProfile } from 'firebase/auth'
 import CancelProfilePhotoModal from './CancelProfilePhotoModal'
+import { AuthContext } from '../../context/AuthContext'
 
-const SaveSelectModal = ({numIndex,setOpenSaveModal,setProfilePhoto,uploadProfilePhoto,openSaveModal}) => {
+const SaveSelectModal = ({numIndex,setOpenSaveModal,setProfilePhoto,uploadProfilePhoto,openSaveModal,profile}) => {
     const[profileGallery,setProfileGallery] = useState([])
     const[openCancelModal,setCancelModal] = useState(false)
-    const{ currentUser } = useContext(AuthContext)
+    const { currentUser } = useContext(AuthContext)
 
     const resetSavePhoto = async() => {
-        const resetLastPhoto = doc(db,'users',currentUser.uid,'gallery','profilePhoto')
+        const resetLastPhoto = doc(db,'users',currentUser?.uid,'gallery','profilePhoto')
         await updateDoc(resetLastPhoto, {
             images: arrayRemove(profileGallery[numIndex])
         })
@@ -35,10 +35,9 @@ const SaveSelectModal = ({numIndex,setOpenSaveModal,setProfilePhoto,uploadProfil
           setProfilePhoto(!uploadProfilePhoto)
     }
     useEffect(()=>{
-        if(!currentUser) return;
+        if(!profile) return;
         const getProfileLastPhoto = async() => {
-            const unsub = onSnapshot(doc(db,'users',currentUser.uid,'gallery','profilePhoto'), (doc) => {
-                console.log(doc.data()?.images);
+            const unsub = onSnapshot(doc(db,'users',profile.uid,'gallery','profilePhoto'), (doc) => {
                 setProfileGallery(doc.data()?.images)
             })
             return () => unsub()
@@ -48,18 +47,18 @@ const SaveSelectModal = ({numIndex,setOpenSaveModal,setProfilePhoto,uploadProfil
         return () => {
             getProfileLastPhoto()
         }
-    },[currentUser])
+    },[profile])
 
     useEffect(()=>{
-        if(!currentUser) return;
+        if(!profile) return;
         const getProfileLastPhoto = async() => {
-        const profileGalleryRef = doc(db,'users',currentUser.uid,'gallery','profilePhoto')
+        const profileGalleryRef = doc(db,'users',profile.uid,'gallery','profilePhoto')
         const res = await getDoc(profileGalleryRef)
         setProfileGallery(res.data()?.images)
         }
         getProfileLastPhoto()
-    },[currentUser])
-console.log(numIndex);
+    },[profile])
+
   return (
     <>
     {openCancelModal? <CancelProfilePhotoModal 
@@ -70,6 +69,7 @@ console.log(numIndex);
         openSaveModal={openSaveModal}
         setOpenSaveModal={setOpenSaveModal}
         profileGallery={profileGallery}
+        profile={profile}
         />
         :
     <div className='fixed top-0 left-0 right-0 w-screen min-h-full flex items-center justify-center z-20 bg-white/80'>

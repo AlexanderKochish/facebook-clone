@@ -1,28 +1,25 @@
 import Image from 'next/image'
-import React, { useContext } from 'react'
 import { useEffect, useState } from 'react'
 import lockProfile from '../../public/lock-icon-protection-icon-security-padlock-png.png'
 import { doc, getDoc } from 'firebase/firestore'
 import { db } from '../../firebase'
 import Link from 'next/link'
-import { AuthContext } from '../../context/AuthContext'
 
-const ProfileSideBar = () => {
+const ProfileSideBar = ({profile}) => {
     const[gallery,setGallery] = useState([])
-    const { currentUser } = useContext(AuthContext)
-
+  
     useEffect(()=>{
-        if(!currentUser) return;
+        if(!profile) return;
         const getGallery = async () => {
-        const userGalleryRef = doc(db,'users',currentUser?.uid, 'gallery', 'coverPhoto')
+        const userGalleryRef = doc(db,'users',profile?.uid, 'gallery', 'coverPhoto')
         const res = await getDoc(userGalleryRef)
         setGallery(res.data()?.cover);
     }
     getGallery()
-    },[currentUser?.uid])
+    },[profile?.uid])
 
   return (
-    <aside className='w-1/2 min-h-full'>
+    <aside className='w-1/2 min-h-full mr-5'>
         <div>
             <div className='w-[400px] min-h-[100px] space-x-2 flex bg-white my-5 p-3 rounded-md shadow-md'>
                 <div className='relative w-14 h-14'>

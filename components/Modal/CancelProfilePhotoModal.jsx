@@ -4,11 +4,10 @@ import { MdOutlineClose } from 'react-icons/md'
 import { AuthContext } from '../../context/AuthContext'
 import { db } from '../../firebase'
 
-const CancelProfilePhotoModal = ({image,profileGallery,openCancelModal,setCancelModal,setProfilePhoto,setOpenSaveModal,openSaveModal}) => {
-    const{currentUser} = useContext(AuthContext)
-
+const CancelProfilePhotoModal = ({image,profile,profileGallery,openCancelModal,setCancelModal,setProfilePhoto,setOpenSaveModal,openSaveModal}) => {
+    const{ currentUser } = useContext(AuthContext)
     const resetSavePhoto = async() => {
-        const resetLastPhoto = doc(db,'users',currentUser.uid,'gallery','profilePhoto')
+        const resetLastPhoto = doc(db,'users',currentUser?.uid,'gallery','profilePhoto')
         await updateDoc(resetLastPhoto, {
             images: arrayRemove(profileGallery[image])
         })
