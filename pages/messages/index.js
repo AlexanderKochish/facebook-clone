@@ -1,12 +1,11 @@
-import MessagesContactList from "../../components/Messages/MessagesContactList"
+import MessagesContactList from "../../components/Messages/MessagesContactList";
 
 const Messages = () => {
-  
   return (
     <div className="flex items-center w-full">
-        <MessagesContactList />
+      <MessagesContactList />
     </div>
-  )
-}
+  );
+};
 
-export default Messages
+export default Messages;

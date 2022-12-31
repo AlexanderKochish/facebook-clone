@@ -1,22 +1,21 @@
-import { useEffect } from 'react'
+import { useEffect } from "react";
 
-const useOutSideClick = (referens,handler,close = true) => {
-  useEffect(()=>{
-    if(!close) return;
+const useOutSideClick = (referens, handler, close = true) => {
+  useEffect(() => {
+    if (!close) return;
 
     const handleClick = (e) => {
-        if(!referens.current) return;
-        if(!referens.current.contains(e.target)){
-            handler()
-        }
-    }
-    document.addEventListener('click', handleClick)
+      if (!referens.current) return;
+      if (!referens.current.contains(e.target)) {
+        handler();
+      }
+    };
+    document.addEventListener("click", handleClick);
 
-    return ()=> {
-        document.removeEventListener('click', handleClick)
-    }
+    return () => {
+      document.removeEventListener("click", handleClick);
+    };
+  }, [referens, handler, close]);
+};
 
-  },[referens,handler,close])
-}
-
-export default useOutSideClick
+export default useOutSideClick;
